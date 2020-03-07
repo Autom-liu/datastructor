@@ -74,6 +74,18 @@ namespace SortTestHelper {
     }
 
     /**
+    * print an array
+    **/
+    template <typename T>
+    void printArray(T arr[], int n) {
+
+        for(int i = 0; i < n; i++) {
+            cout<< arr[i] << " ";
+        }
+        cout<<endl;
+    }
+
+    /**
     *  test sort
     **/
     template <typename T>
@@ -85,18 +97,6 @@ namespace SortTestHelper {
         assert(isSorted(arr, n, sorter->getComparator()));
         cout<< sorter->getSortName()<<" : "<<double(endTime - startTime) / CLOCKS_PER_SEC << " s" << endl;
 
-    }
-
-    /**
-    * print an array
-    **/
-    template <typename T>
-    void printArray(T arr[], int n) {
-
-        for(int i = 0; i < n; i++) {
-            cout<< arr[i] << " ";
-        }
-        cout<<endl;
     }
 
 };

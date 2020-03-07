@@ -7,6 +7,8 @@
 #include "core/InsertionSort.h"
 #include "core/BubbleSort.h"
 #include "core/ShellSort.h"
+#include "core/MergeSort.h"
+#include "core/QuickSort.h"
 using namespace std;
 
 void executeTest(vector<SortAlgorithm<int>*> sorter, int* arr, int n) {
@@ -18,34 +20,29 @@ void executeTest(vector<SortAlgorithm<int>*> sorter, int* arr, int n) {
 }
 
 void reverseSortTest(vector<SortAlgorithm<int>*> sorter, int n) {
-    cout<<"nearlySortTest:"<<endl;
+    cout<<"=====reverseSortTest========"<<endl;
     int* arr = SortTestHelper::generateReserve(n);
     executeTest(sorter, arr, n);
     delete[] arr;
 }
 
 void nearlySortTest(vector<SortAlgorithm<int>*> sorter, int n) {
-    cout<<"reverseSortTest:"<<endl;
+    cout<<"=======nearlySortTest============"<<endl;
     int* arr = SortTestHelper::generateNearlySortedCase(n, 100);
     executeTest(sorter, arr, n);
     delete[] arr;
 }
 
-/**
-* �������ظ�Ԫ�ص�����
-**/
 void repeatTest(vector<SortAlgorithm<int>*> sorter, int n) {
-    cout<<"repeatTest:"<<endl;
+    cout<<"========repeatTest============="<<endl;
     int* arr = SortTestHelper::generateTestCase(n, 0, 3);
     executeTest(sorter, arr, n);
     delete[] arr;
 }
 
-/**
-* ������Է���
-**/
+
 void originTest(vector<SortAlgorithm<int>*> sorter, int n) {
-    cout<<"originTest:"<<endl;
+    cout<<"===========originTest=============="<<endl;
     int* arr = SortTestHelper::generateTestCase(n, 0, n * 10);
     executeTest(sorter, arr, n);
     delete[] arr;
@@ -54,25 +51,33 @@ void originTest(vector<SortAlgorithm<int>*> sorter, int n) {
 
 int main()
 {
-    int n = 1000;
+    int n = 10000000;
     Comparator<int>* ic = SortTestHelper::getIntComparator();
 
     vector<SortAlgorithm<int>*> sorter;
-    sorter.push_back(new SelectionSort<int>(ic));
-    sorter.push_back(new InsertionSort<int>(ic));
+    ///sorter.push_back(new SelectionSort<int>(ic));
+    ///sorter.push_back(new InsertionSort<int>(ic));
+    ///sorter.push_back(new FasterInsertionSort<int>(ic));
+    ///sorter.push_back(new FasterSelectionSort<int>(ic));
+    ///sorter.push_back(new BubbleSort<int>(ic));
+    ///sorter.push_back(new FasterBubbleSort<int>(ic));
+    ///sorter.push_back(new SelectionSort<int>(ic));
+    ///sorter.push_back(new SelectionSort<int>(ic));
     sorter.push_back(new ShellSort<int>(ic));
-    sorter.push_back(new FasterInsertionSort<int>(ic));
     sorter.push_back(new FasterShellSort<int>(ic));
-    sorter.push_back(new FasterSelectionSort<int>(ic));
-    sorter.push_back(new BubbleSort<int>(ic));
-    sorter.push_back(new FasterBubbleSort<int>(ic));
-    sorter.push_back(new SelectionSort<int>(ic));
-    sorter.push_back(new SelectionSort<int>(ic));
+    sorter.push_back(new MergeSort<int>(ic));
+    sorter.push_back(new FasterMergeSort<int>(ic, n));
+    ///sorter.push_back(new QuickSort<int>(ic));
+    ///sorter.push_back(new QuickSort2<int>(ic));
+    ///sorter.push_back(new QuickSort3<int>(ic));
+    sorter.push_back(new FasterQuickSort<int>(ic));
+    sorter.push_back(new FasterQuickSort2<int>(ic));
 
-    originTest(sorter, n);
+
+    ///originTest(sorter, n);
     repeatTest(sorter, n);
-    nearlySortTest(sorter, n);
-    reverseSortTest(sorter, n);
+    ///nearlySortTest(sorter, n);
+    ///reverseSortTest(sorter, n);
 
     for(unsigned int i = 0; i < sorter.size(); i++) {
         delete sorter[i];
@@ -83,40 +88,45 @@ int main()
 
 /**
 * 实验数据结论：
-* 10W规模的数据，随机序列
-* SelectionSort：           25.496
-* InsertionSort：           24.956
-* BubbleSort:               57.417
-* ShellSort:                0.045
-* FasterShellSort:          0.036
-* FasterInsertionSort：     15.48
-* FasterSelectionSort:      23.784
-* FasterBubbleSort:         60.21
-* 重复序列：
-* SelectionSort：           29.669
-* InsertionSort：           17.999
-* BubbleSort:               50.483
-* ShellSort:                0.023
-* FasterShellSort:          0.011
-* FasterInsertionSort：     11.654
-* FasterSelectionSort:      26.424
-* FasterBubbleSort:         52.77
-* 近乎有序列：
-* SelectionSort：           30.661
-* InsertionSort：           0.026
-* BubbleSort:               15.307
-* ShellSort:                0.024
-* FasterShellSort:          0.013
-* FasterInsertionSort：     0.018
-* FasterSelectionSort:      26.944
-* FasterBubbleSort:         3.341
-* 完全逆序:
-* SelectionSort：           26.524
-* InsertionSort：           48.98
-* BubbleSort:               56.016
-* ShellSort:                0.025
-* FasterShellSort:          0.014
-* FasterInsertionSort：     33.643
-* FasterSelectionSort:      27.084
-* FasterBubbleSort:         56.049
+* 10W规模的数据，随机序列              100W规模数据                           1000W 规模数据
+* SelectionSort：           25.496      ShellSort           0.603  0.61        9.453
+* InsertionSort：           24.956      FasterShellSort     0.589  0.576       8.134
+* BubbleSort:               57.417      MergeSort           0.723  0.734       7.692
+* ShellSort:                0.045       FasterMergeSort     0.296  0.29        2.323
+* FasterShellSort:          0.036       QuickSort           0.321  0.318       10.901
+* FasterInsertionSort：     15.48       QuickSort2          0.307  0.299       14.872
+* FasterSelectionSort:      23.784      QuickSort3          0.311  0.31        10.28
+* FasterBubbleSort:         60.21       FasterQuickSort     0.251  0.243       2.347
+* 重复序列：                           FasterQuickSort2     0.294  0.305       2.833
+* SelectionSort：           29.669     重复序列
+* InsertionSort：           17.999     ShellSort             0.235  0.234      2.885
+* BubbleSort:               50.483     FasterShellSort       0.122  0.117      1.358
+* ShellSort:                0.023      MergeSort             0.646  0.642      7.259
+* FasterShellSort:          0.011      FasterMergeSort       0.203  0.201      2.621
+* FasterInsertionSort：     11.654     QuickSort             ----   ----       -----
+* FasterSelectionSort:      26.424     QuickSort2            ----   ----       -----
+* FasterBubbleSort:         52.77      QuickSort3            ----   ----       -----
+* 近乎有序列：                        FasterQuickSort       0.028   0.026      0.358
+* SelectionSort：           30.661    FasterQuickSort2       0.024   0.023     0.282
+* InsertionSort：           0.026      近乎有序列：
+* BubbleSort:               15.307     ShellSort             0.211  0.208       2.51
+* ShellSort:                0.024      FasterShellSort       0.093  0.098       1.079
+* FasterShellSort:          0.013      MergeSort             0.583  0.619       6.275
+* FasterInsertionSort：     0.018      FasterMergeSort       0.012  0.012       0.095
+* FasterSelectionSort:      26.944     QuickSort             0.3    0.335       19.981
+* FasterBubbleSort:         3.341      QuickSort2            0.328  0.336       25.478
+* 完全逆序:                            QuickSort3            0.239  0.233       19.408
+* SelectionSort：           26.524     FasterQuickSort       0.512  0.533       33.112
+* InsertionSort：           48.98      FasterQuickSort2      0.675  0.668       49.818
+* BubbleSort:               56.016     完全逆序
+* ShellSort:                0.025      ShellSort             0.264  0.268       3.864
+* FasterShellSort:          0.014      FasterShellSort       0.134  0.133       1.988
+* FasterInsertionSort：     33.643     MergeSort             0.592  0.582       7.607
+* FasterSelectionSort:      27.084     FasterMergeSort       0.189  0.189       2.466
+* FasterBubbleSort:         56.049     QuickSort             0.488  0.487       38.337
+*                                      QuickSort2            0.455  0.476       38.63
+*                                      QuickSort3            0.315  0.309       26.497
+*                                      FasterQuickSort       0.52   0.507       37.715
+*                                      FasterQuickSort2      0.807  0.738       65.419
+*
 ***/
