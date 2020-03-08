@@ -132,4 +132,75 @@ public:
     }
 };
 
+
+template <typename T>
+class FasterMergeSortBU : public SortAlgorithm<T> {
+private:
+    Comparator<T>* c;
+    T* aux;
+
+    /// [l, mid) [mid, r)
+    void __merge(T arr[], int l, int mid, int r) {
+
+        for(int i = l; i < r; i++) {
+            aux[i] = arr[i];
+        }
+
+        int i = l, j = mid;
+        for(int k = l; k < r; k++) {
+            if(i >= mid) {
+                arr[k] = aux[j++];
+            } else if(j >= r) {
+                arr[k] = aux[i++];
+            } else if(c->isLessOrEqual(aux[i], aux[j])) {
+                arr[k] = aux[i++];
+            } else {
+                arr[k] = aux[j++];
+            }
+        }
+    }
+    /// [l, r)
+    void __mergeSort(T arr[], int n, int minsz = 16) {
+        for(int i = 0; i < n; i+=minsz) {
+            rangeInsertSort(arr, i, min(i+minsz, n));
+        }
+
+        for(int k = minsz; k < n; k+=k) {
+            for(int i=0; i < n-k; i+=k*2) {
+                int mid = i + k;
+                __merge(arr, i, mid, min(i+k*2, n));
+            }
+        }
+
+    }
+    /// [l, r)
+    void rangeInsertSort(T arr[], int l, int r) {
+        for(int i = l; i < r; i++) {
+            T e = arr[i];
+            int j = i;
+            for(j = i; j > l && c->isLessThan(e, arr[j-1]); j--) {
+                arr[j] = arr[j-1];
+            }
+            arr[j] = e;
+        }
+    }
+public:
+    FasterMergeSortBU(Comparator<T>* c) {
+        this->c = c;
+    }
+    void sort(T arr[], int n) {
+        this->aux = new int[n];
+        __mergeSort(arr, n);
+        delete[] aux;
+    }
+    string getSortName() {
+        return "BubbleUp Merge Sort";
+    }
+    Comparator<T>* getComparator() {
+        return this->c;
+    }
+    ~FasterMergeSortBU() {
+    }
+};
+
 #endif // MERGESORT_H_INCLUDED

@@ -63,10 +63,34 @@ private:
             arr[j] = e;
         }
     }
+    int getMidIndex2(T arr[], int l, int r) {
+        int mid = (r + l) / 2;
+        T lv = arr[l];
+        T rv = arr[r - 1];
+        T dv = arr[mid];
+        if(lv < dv) {
+            if(rv < lv) {
+                return l;
+            } else if(rv < dv) {
+                return r - 1;
+            } else {
+                return mid;
+            }
+        } else {
+            if(lv < rv) {
+                return l;
+            } else if(dv < rv) {
+                return r - 1;
+            } else {
+                return mid;
+            }
+        }
+    }
     int* __partition(T arr[], int l, int r) {
-        swap(arr[l], arr[rand() % (r - l) + l]);
+        int midIndex = getMidIndex2(arr, l, r);
+        ///swap(arr[l], arr[midIndex]);
         int* ret = new int[2];
-        T v = arr[l];
+        T v = arr[midIndex];
         int lt = l, gt = lt;
         /// [l, lt) < v  [lt, gt) == v  [gt, i) > v
         for(int i = gt; i < r; i++) {
@@ -196,9 +220,32 @@ private:
             arr[j] = e;
         }
     }
+    int getMidIndex2(T arr[], int l, int r) {
+        int mid = (r + l) / 2;
+        T lv = arr[l];
+        T rv = arr[r - 1];
+        T dv = arr[mid];
+        if(lv < dv) {
+            if(rv < lv) {
+                return l;
+            } else if(rv < dv) {
+                return r - 1;
+            } else {
+                return mid;
+            }
+        } else {
+            if(lv < rv) {
+                return l;
+            } else if(dv < rv) {
+                return r - 1;
+            } else {
+                return mid;
+            }
+        }
+    }
     int __partition(T arr[], int l, int r) {
-        swap(arr[l], arr[rand() % (r - l) + l]);
-        T e = arr[l];
+        int midIndex = getMidIndex2(arr, l, r);
+        T e = arr[midIndex];
         int i = l, j = r - 1;
         while(i != j) {
             while(c->isGreaterOrEqual(arr[j], e) && j > i) {
@@ -211,9 +258,16 @@ private:
                 swap(arr[i], arr[j]);
             }
         }
-        arr[l] = arr[i];
-        arr[i] = e;
-        return i;
+        if(midIndex > j && c->isLessOrEqual(arr[j], e)) {
+            swap(arr[++j], arr[midIndex]);
+            return j;
+        } else if (midIndex < i && c->isGreaterOrEqual(arr[i], e)) {
+            swap(arr[--i], arr[midIndex]);
+            return i;
+        } else {
+            swap(arr[i], arr[midIndex]);
+            return i;
+        }
     }
 public:
     QuickSort3(Comparator<T>* c) {
@@ -260,11 +314,34 @@ private:
             arr[j] = e;
         }
     }
+    int getMidIndex(T arr[], int l, int r) {
+        int mid = (r + l) / 2;
+        T lv = arr[l];
+        T rv = arr[r - 1];
+        T dv = arr[mid];
+        if(lv < dv) {
+            if(rv < lv) {
+                return l;
+            } else if(rv < dv) {
+                return r - 1;
+            } else {
+                return mid;
+            }
+        } else {
+            if(lv < rv) {
+                return l;
+            } else if(dv < rv) {
+                return r - 1;
+            } else {
+                return mid;
+            }
+        }
+    }
     int* __partition(T arr[], int l, int r) {
-        swap(arr[l], arr[rand() % (r - l) + l]);
+        int midIndex = getMidIndex(arr, l, r);
         int* ret = new int[2];
-        T v = arr[l];
-        int lt = l, gt = r, i = lt + 1;
+        T v = arr[midIndex];
+        int lt = l, gt = r, i = lt;
         /// [l, lt) < v  [lt, i) == v  [gt, r) > v
         while(i < gt) {
             if(c->isLessThan(arr[i], v)) {
