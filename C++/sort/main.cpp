@@ -16,6 +16,7 @@ void executeTest(vector<SortAlgorithm<int>*> sorter, int* arr, int n) {
     for(unsigned int i = 0; i < sorter.size(); i++) {
         int* arr2 = SortTestHelper::copyArray(arr, n);
         SortTestHelper::testSort(sorter[i], arr2, n);
+        SortTestHelper::printArray(arr2, n);
         delete[] arr2;
     }
 }
@@ -63,7 +64,7 @@ void originTest(vector<SortAlgorithm<int>*> sorter, int n) {
 
 int main()
 {
-    int n = 10000000;
+    int n = 100;
     Comparator<int>* ic = SortTestHelper::getIntComparator();
 
     vector<SortAlgorithm<int>*> sorter;
@@ -79,7 +80,7 @@ int main()
     ///sorter.push_back(new FasterShellSort<int>(ic));
     ///sorter.push_back(new MergeSort<int>(ic));
     sorter.push_back(new FasterMergeSort<int>(ic, n));
-    sorter.push_back(new FasterMergeSortBU<int>(ic));
+    ///sorter.push_back(new FasterMergeSortBU<int>(ic));
     ///sorter.push_back(new QuickSort<int>(ic));
     ///sorter.push_back(new QuickSort2<int>(ic));
     ///sorter.push_back(new QuickSort3<int>(ic));
