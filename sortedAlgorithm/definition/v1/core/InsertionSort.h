@@ -77,6 +77,50 @@ public:
     }
 };
 
+template <typename T>
+class BinaryInsertSort : public SortAlgorithm<T> {
+private:
+    Comparator<T>* c;
+public:
+    BinaryInsertSort<T>(Comparator<T>* c) {
+        this->c = c;
+    }
+    void sort(T arr[], int n) {
+        for(int i = 1; i < n; i++) {
+            T target = arr[i];
+            int index = binarySearch(arr, 0, i, target);
+            int j = i;
+            for(j = i; j > index; j--) {
+                arr[j] = arr[j-1];
+            }
+            arr[j] = target;
+        }
+    }
+    /// [l, r)
+    int binarySearch(T arr[], int l, int r, T target) {
+        while(l < r) {
+            int mid = (r + l)/2;
+            if(c->equals(arr[mid], target)) {
+                return mid;
+            } else if(c->isLessThan(target, arr[mid])) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+    string getSortName() {
+        return "Binary Insertion Sort";
+    }
 
+    Comparator<T>* getComparator() {
+        return this->c;
+    }
+    ~BinaryInsertSort() {
+
+    }
+
+};
 
 #endif // INSERTIONSORT_H_INCLUDED

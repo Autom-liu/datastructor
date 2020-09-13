@@ -16,7 +16,7 @@ void executeTest(vector<SortAlgorithm<int>*> sorter, int* arr, int n) {
     for(unsigned int i = 0; i < sorter.size(); i++) {
         int* arr2 = SortTestHelper::copyArray(arr, n);
         SortTestHelper::testSort(sorter[i], arr2, n);
-        SortTestHelper::printArray(arr2, n);
+        ///SortTestHelper::printArray(arr2, n);
         delete[] arr2;
     }
 }
@@ -64,13 +64,14 @@ void originTest(vector<SortAlgorithm<int>*> sorter, int n) {
 
 int main()
 {
-    int n = 100;
+    int n = 100000;
     Comparator<int>* ic = SortTestHelper::getIntComparator();
 
     vector<SortAlgorithm<int>*> sorter;
     ///sorter.push_back(new SelectionSort<int>(ic));
-    ///sorter.push_back(new InsertionSort<int>(ic));
-    ///sorter.push_back(new FasterInsertionSort<int>(ic));
+    sorter.push_back(new InsertionSort<int>(ic));
+    sorter.push_back(new FasterInsertionSort<int>(ic));
+    sorter.push_back(new BinaryInsertSort<int>(ic));
     ///sorter.push_back(new FasterSelectionSort<int>(ic));
     ///sorter.push_back(new BubbleSort<int>(ic));
     ///sorter.push_back(new FasterBubbleSort<int>(ic));
@@ -79,7 +80,7 @@ int main()
     ///sorter.push_back(new ShellSort<int>(ic));
     ///sorter.push_back(new FasterShellSort<int>(ic));
     ///sorter.push_back(new MergeSort<int>(ic));
-    sorter.push_back(new FasterMergeSort<int>(ic, n));
+    ///sorter.push_back(new FasterMergeSort<int>(ic, n));
     ///sorter.push_back(new FasterMergeSortBU<int>(ic));
     ///sorter.push_back(new QuickSort<int>(ic));
     ///sorter.push_back(new QuickSort2<int>(ic));
@@ -115,6 +116,7 @@ int main()
 * 10W规模的数据，随机序列              100W规模数据                           1000W 规模数据
 * SelectionSort：           25.496      ShellSort           0.603  0.61        9.453    9.114
 * InsertionSort：           24.956      FasterShellSort     0.589  0.576       8.134    7.352
+* BinaryInsertSort          5.765
 * BubbleSort:               57.417      MergeSort           0.723  0.734       7.692    7.359
 * ShellSort:                0.045       FasterMergeSort     0.296  0.29        2.323    2.235
 * FasterShellSort:          0.036       QuickSort           0.321  0.318       10.901
@@ -127,6 +129,7 @@ int main()
 * SelectionSort：           29.669     重复序列
 * InsertionSort：           17.999     ShellSort             0.235  0.234      2.885    3.093
 * BubbleSort:               50.483     FasterShellSort       0.122  0.117      1.358    1.572
+* BinaryInsertSort          6.141
 * ShellSort:                0.023      MergeSort             0.646  0.642      7.259    7.092
 * FasterShellSort:          0.011      FasterMergeSort       0.203  0.201      2.621    2.328
 * FasterInsertionSort：     11.654     QuickSort             ----   ----       -----
@@ -134,7 +137,7 @@ int main()
 * FasterBubbleSort:         52.77      QuickSort3            ----   ----       -----
 * 近乎有序列：                        FasterQuickSort       0.028   0.026      0.358   0.344   0.258        0.295
 * SelectionSort：           30.661    FasterQuickSort2       0.024   0.023      0.282   0.314
-*                                     HeapSort               0.249   0.259      2.797   3.335
+* BinaryInsertSort          0.021     HeapSort               0.249   0.259      2.797   3.335
 *                                       FasterHeapSort       0.211   0.212      2.281   2.769
 * InsertionSort：           0.026      近乎有序列：
 * BubbleSort:               15.307     ShellSort             0.211  0.208       2.51    2.948
@@ -146,7 +149,7 @@ int main()
 * 完全逆序:                            QuickSort3            0.239  0.233       19.408          11.898  1.034  1.066
 * SelectionSort：           26.524     FasterQuickSort       0.512  0.533       33.112  32.863  23.787  2.579
 * InsertionSort：           48.98      FasterQuickSort2      0.675  0.668       49.818  49.736                  2.324
-*                                       HeapSort             0.372  0.378       4.239   5.138
+* BinaryInsertSort          13.289     HeapSort             0.372  0.378       4.239   5.138
 *                                       FasterHeapSort       0.302  0.304       3.436   4.264
 * BubbleSort:               56.016     完全逆序
 * ShellSort:                0.025      ShellSort             0.264  0.268       3.864   3.805
