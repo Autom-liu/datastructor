@@ -13,6 +13,21 @@ void printArr(Array<int>* arr) {
     }
 }
 
+void printInterator(Array<int>* arr) {
+
+    Array<int>::iterator* it = arr->newIterator();
+    int i = 0;
+    while(it->hasNext()) {
+        cout<<it->next()<<" ";
+        i++;
+        if(i % 10 == 0) {
+            cout<<endl;
+        }
+    }
+    delete it;
+
+}
+
 int main()
 {
     Array<int>* arr = new Array<int>();
@@ -29,6 +44,6 @@ int main()
         arr->removeLast();
     }
     arr->remove(10);
-    printArr(arr);
+    printInterator(arr);
     return 0;
 }
