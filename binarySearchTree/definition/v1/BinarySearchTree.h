@@ -2,6 +2,7 @@
 #define TREENODE_H_INCLUDED
 
 #include "Array.h"
+#include "Queue.h"
 
 template <typename T>
 class TreeNode {
@@ -94,6 +95,39 @@ namespace TravelHelper {
         postOrder(node->left, result);
         postOrder(node->right, result);
         result->add(node->value);
+    }
+
+    template <typename T>
+    void levelOrder(TreeNode<T>* node, Array<TreeNode<T>*>* result) {
+        if(node == NULL) {
+            return;
+        }
+        Queue<TreeNode<T>*>* qq = new Queue<TreeNode<T>*>();
+        qq->push(node);
+        while(!qq->isEmpty()) {
+            TreeNode<T>* head = qq->pop();
+            if(head != NULL) {
+                result->add(head);
+                qq->push(head->left);
+                qq->push(head->right);
+            }
+        }
+        delete qq;
+    }
+
+    template <typename T>
+    void levelOrder(TreeNode<T>* node, Array<T>* result) {
+        Queue<TreeNode<T>*>* qq = new Queue<TreeNode<T>*>();
+        qq->push(node);
+        while(!qq->isEmpty()) {
+            TreeNode<T>* head = qq->pop();
+            if(head != NULL) {
+                result->add(head->value);
+                qq->push(head->left);
+                qq->push(head->right);
+            }
+        }
+        delete qq;
     }
 
 };
@@ -262,6 +296,12 @@ public:
     Array<T>* postOrder() {
         Array<T>* result = new Array<T>();
         TravelHelper::postOrder(this->root, result);
+        return result;
+    }
+
+    Array<T>* levelOrder() {
+        Array<T>* result = new Array<T>();
+        TravelHelper::levelOrder(root, result);
         return result;
     }
 

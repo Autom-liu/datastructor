@@ -3,12 +3,15 @@
 
 typedef std::string string;
 
+#ifndef EXCEPTION
+#define EXCEPTION
 class IndexOutOfBoundException {
 private:
     string msg;
 public:
     IndexOutOfBoundException(string msg) : msg(msg) {}
 };
+#endif // EXCEPTION
 
 template <typename E>
 class Array {
