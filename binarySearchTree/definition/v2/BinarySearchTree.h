@@ -213,10 +213,6 @@ private:
         size--;
     }
 
-    void addNode(TreeNode<T>*& position, TreeNode<T>* node) {
-        position = node;
-    }
-
 public:
     BinarySearchTree() {
         this->root = NULL;
@@ -247,7 +243,7 @@ public:
             }
             current = *addr;
         }
-        addNode(*addr, new TreeNode<T>(value));
+        *addr = new TreeNode<T>(value);
         size++;
     }
 
