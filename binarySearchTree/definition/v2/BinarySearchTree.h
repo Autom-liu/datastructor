@@ -106,7 +106,7 @@ namespace TravelHelper {
                 st->push(current);
                 current = current->left;
             } else {
-                current = st->top(); /// 只是查看栈顶元素，不做访问
+                current = st->top(); /// 第一次，只是查看栈顶元素，不做访问
                 if(current->hasRight() && current->right != lastVisit) {
                     current = current->right;
                 } else {
