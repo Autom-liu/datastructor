@@ -34,15 +34,14 @@ namespace TravelHelper {
     void preOrder(TreeNode<T>* node, Array<TreeNode<T>* >* result) {
         TreeNode<T>* current = node;
         Stack<TreeNode<T>*>* st = new Stack<TreeNode<T>*>();
-        while(current != NULL && !st->isEmpty()) {
-            result->add(current);
-            if(current->hasRight()) {
+        st->push(current);
+        while(current != NULL || !st->isEmpty()) {
+            current = st->pop();
+            if(current != NULL) {
+                result->add(current);
                 st->push(current->right);
-            }
-            if(current->hasLeft()) {
                 st->push(current->left);
             }
-            current = st->pop();
         }
         delete st;
     }
