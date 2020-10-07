@@ -312,39 +312,24 @@ private:
     *  待删除的结点非叶子结点，实际删除的结点在以该结点为根的子树下
     **/
     void removeSimpleNode(TreeNode<T>*& parent, TreeNode<T>*& delNode, TreeNode<T>* brotherNode, TreeNode<T>*& node) {
+        /// 只做值替换，避免结点替换的矛盾问题
+        TreeNode<T>* oldDelNode = delNode;
+        T oldValue = oldDelNode->value;
+        TreeNode<T>* replaced = oldDelNode->hasLeft() ? oldDelNode->left : oldDelNode->right;
+        delNode = replaced;
+        node->value = oldValue;
 
-        bool flag = true;
-        bool isNeedReBalance = isNeedReBalanceInDeletion(delNode);
-        if(node == parent) {
-            TreeNode<T>* oldNode = node;
-            TreeNode<T>* oldDelNode = delNode;
-            TreeNode<T>* replaced = oldDelNode->hasLeft() ? oldDelNode->left : oldDelNode->right;
-            delNode = replaced;
-            node = replaceNode(oldDelNode, node);
-            delete oldNode;
-            flag = false;
-        }
-
-        ///cout<<"node->value= "<<node->value<<" parent->value= "<<parent->value<<endl;
-        if(isNeedReBalance) {
+        if(isNeedReBalanceInDeletion(oldDelNode)) {
             parent = deleteReBalance(parent, brotherNode);
         }
 
-        if(flag) {
-            TreeNode<T>* oldNode = node;
-            TreeNode<T>* oldDelNode = delNode;
-            TreeNode<T>* replaced = oldDelNode->hasLeft() ? oldDelNode->left : oldDelNode->right;
-            delNode = replaced;
-            node = replaceNode(oldDelNode, node);
-            delete oldNode;
-        }
+        delete oldDelNode;
     }
 
     void removeLeafNode(TreeNode<T>*& parent, TreeNode<T>*& delNode, TreeNode<T>* brotherNode) {
         if(isNeedReBalanceInDeletion(delNode)) {
             parent = deleteReBalance(parent, brotherNode);
         }
-        cout<<"after Balanced"<<endl;
         delete delNode;
         delNode = NULL;
     }
@@ -490,7 +475,6 @@ private:
         if(brother == NULL) {
             return parent;
         }
-        cout<<"parent: "<<parent->value<<" color: "<<parent->color<<" brother: "<<brother->value<<" color: "<<brother->color<<" need reBalance"<<endl;
         ///兄弟为红色，单次旋转变色后，转为兄弟黑色，父亲红色处理 （兄弟是红色，兄弟一定不为空，父亲一定是黑色）
         if(getColor(brother) == RED && parent->left == brother) {  //LL
             TreeNode<T>* newBrother = brother->right;
