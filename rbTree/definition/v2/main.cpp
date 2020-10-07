@@ -33,7 +33,12 @@ int main()
     for(int i = 0; i < arr->getLength(); i++) {
         cout<<arr->get(i)<<" ";
     }
-    cout<<" size: "<<bst->getSize()<<endl;
+    cout<<"size: "<<bst->getSize()<<endl;
+    arr = bst->levelOrder();
+    for(int i = 0; i < arr->getLength(); i++) {
+        cout<<arr->get(i)<<" ";
+    }
+    cout<<"size: "<<bst->getSize()<<endl;
 
     arr = bst->preOrder();
     for(int i = 0; i < arr->getLength(); i++) {
