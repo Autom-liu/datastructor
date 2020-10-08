@@ -7,7 +7,7 @@ using namespace std;
 int main()
 {
     RBTree<int>* bst = new RBTree<int>();
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 100; i++) {
         int x = rand() % 100;
         bst->add(x);
         cout<<x<<" ";
@@ -41,7 +41,7 @@ int main()
     cout<<"size: "<<bst->getSize()<<endl;
 
     arr = bst->preOrder();
-    for(int i = 0; i < arr->getLength(); i++) {
+    for(int i = 10; i < arr->getLength(); i++) {
         bst->remove(arr->get(i));
     }
     arr = bst->levelOrder();

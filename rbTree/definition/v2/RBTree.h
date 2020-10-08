@@ -318,66 +318,84 @@ private:
         return retNode;
     }
 
-    TreeNode<T>* deleteReBalance(TreeNode<T>* parent, TreeNode<T>* brother) {
+    bool isNeedReBalanceInDeletion(TreeNode<T>* delNode) {
+        if(delNode == NULL) {
+            return false;
+        }
+
+        if(delNode->hasLeft()) {
+            delNode->left->color = BLACK;
+        } else if (delNode->hasRight()) {
+            delNode->right->color = BLACK;
+        }
+
+        return getColor(delNode) == BLACK && delNode->isLeaf() && delNode != root;
+    }
+
+    /**
+    *   删除结点时调节以parent为根，brother为兄弟的子树颜色平衡
+    *   返回是否需要继续上层平衡
+    **/
+    bool deleteReBalance(TreeNode<T>*& parent, TreeNode<T>* brother) {
         if(brother == NULL) {
-            return parent;
+            return false;
         }
         ///兄弟为红色，单次旋转变色后，转为兄弟黑色，父亲红色处理 （兄弟是红色，兄弟一定不为空，父亲一定是黑色）
         if(getColor(brother) == RED && parent->left == brother) {  //LL
             TreeNode<T>* newBrother = brother->right;
-            TreeNode<T>* retNode = reBalance(brother, brother->left, parent, nullableNode(brother->left, LEFT), nullableNode(brother->left, RIGHT), brother->right, parent->right);
-            brother->color = BLACK;
-            parent->color = RED;
-            retNode->right = deleteReBalance(parent, newBrother);
-            return retNode;
+            parent = reBalance(brother, brother->left, parent, nullableNode(brother->left, LEFT), nullableNode(brother->left, RIGHT), brother->right, parent->right);
+            parent->color = BLACK;
+            parent->right->color = RED;
+            return deleteReBalance(parent->right, newBrother);
         } else if (getColor(brother) == RED && parent->right == brother) { //RR
             TreeNode<T>* newBrother = brother->left;
-            TreeNode<T>* retNode = reBalance(brother, parent, brother->right, parent->left, brother->left, nullableNode(brother->right, LEFT), nullableNode(brother->right, RIGHT));
-            brother->color = BLACK;
-            parent->color = RED;
-            retNode->left = deleteReBalance(parent, newBrother);
-            return retNode;
+            parent = reBalance(brother, parent, brother->right, parent->left, brother->left, nullableNode(brother->right, LEFT), nullableNode(brother->right, RIGHT));
+            parent->color = BLACK;
+            parent->left->color = RED;
+            return deleteReBalance(parent->left, newBrother);
         }
         /// 兄弟为黑，父亲也为黑，兄的两个孩子均为黑（删除黑叶子结点时，这种情况兄弟存在且两个孩子都为空）转为兄红色处理
         else if (getColor(brother) == BLACK && getColor(parent) == BLACK && getColor(brother->left) == BLACK && getColor(brother->right) == BLACK) {
             brother->color = RED;
-            return deleteReBalance(parent, brother);
+            return true;    /// 此时需要告知向上重新调平衡
         }
         /// 兄弟为黑，兄的两个孩子均为黑，父亲为红，变色平衡
         else if (getColor(brother) == BLACK && getColor(parent) == RED && getColor(brother->left) == BLACK && getColor(brother->right) == BLACK) {
             parent->color = BLACK;
             brother->color = RED;
-            return parent;
+            return false;
         }
         /// 兄弟为黑，与兄同边的孩子为红，（此时该红孩子一定存在）单旋变色平衡
         else if (getColor(brother) == BLACK && parent->left == brother && getColor(brother->left) == RED) { // LL
-            TreeNode<T>* retNode = reBalance(brother, brother->left, parent, nullableNode(brother->left, LEFT), nullableNode(brother->left, RIGHT), brother->right, parent->right);
-            retNode->color = getColor(parent);
-            retNode->left->color = BLACK;
-            retNode->right->color = BLACK;
-            return retNode;
+            bool oldColor = getColor(parent);
+            parent = reBalance(brother, brother->left, parent, nullableNode(brother->left, LEFT), nullableNode(brother->left, RIGHT), brother->right, parent->right);
+            parent->color = oldColor;
+            parent->left->color = BLACK;
+            parent->right->color = BLACK;
+            return false;
         } else if (getColor(brother) == BLACK && parent->right == brother && getColor(brother->right) == RED) { // RR
-            TreeNode<T>* retNode = reBalance(brother, parent, brother->right, parent->left, brother->left, nullableNode(brother->right, LEFT), nullableNode(brother->right, RIGHT));
-            retNode->color = getColor(parent);
-            retNode->left->color = BLACK;
-            retNode->right->color = BLACK;
-            return retNode;
+            bool oldColor = getColor(parent);
+            parent = reBalance(brother, parent, brother->right, parent->left, brother->left, nullableNode(brother->right, LEFT), nullableNode(brother->right, RIGHT));
+            parent->color = oldColor;
+            parent->left->color = BLACK;
+            parent->right->color = BLACK;
+            return false;
         }
         /// 兄弟为黑，与兄不同边的孩子为红，（此时该红孩子一定存在），另一边为黑色。双旋变色平衡
         else if (getColor(brother) == BLACK && parent->left == brother && getColor(brother->right) == RED && getColor(brother->left) == BLACK) { // LR
-            TreeNode<T>* retNode = reBalance(brother->right, brother, parent, brother->left, brother->right->left, brother->right->right, parent->right);
-            retNode->color = getColor(parent);
-            retNode->left->color = BLACK;
-            retNode->right->color = BLACK;
-            return retNode;
+            parent = reBalance(brother->right, brother, parent, brother->left, brother->right->left, brother->right->right, parent->right);
+            parent->color = getColor(parent);
+            parent->left->color = BLACK;
+            parent->right->color = BLACK;
+            return false;
         } else if (getColor(brother) == BLACK && parent->right == brother && getColor(brother->left) == RED && getColor(brother->right) == BLACK) { // RL
-            TreeNode<T>* retNode = reBalance(brother->left, parent, brother, parent->left, brother->left->left, brother->left->right, brother->right);
-            retNode->color = getColor(parent);
-            retNode->left->color = BLACK;
-            retNode->right->color = BLACK;
-            return retNode;
+            parent = reBalance(brother->left, parent, brother, parent->left, brother->left->left, brother->left->right, brother->right);
+            parent->color = getColor(parent);
+            parent->left->color = BLACK;
+            parent->right->color = BLACK;
+            return false;
         }
-        return parent;
+        return false;
     }
 
     /**
@@ -397,7 +415,6 @@ private:
         } else {
             node = node->right;
         }
-        current->right = NULL;
         return current;
     }
 
@@ -418,26 +435,47 @@ private:
         } else {
             node = node->left;
         }
-        current->left = NULL;
         return current;
     }
 
-    void removeNode(TreeNode<T>*& node) {
-        TreeNode<T>* replaced = NULL;
+    bool removeNode(TreeNode<T>*& node) {
+        bool isNeedReBalanced = false;
         if(node->hasLeft()) {
-            replaced = removeMax(node->left);
-            replaced->left = node->left;
-            replaced->right = node->right;
+            TreeNode<T>* replaced = removeMax(node->left);
+            node->value = replaced->value;
+            isNeedReBalanced = isNeedReBalanceInDeletion(replaced);
+            delete replaced;
         } else if(node->hasRight()) {
-            replaced = removeMin(node->right);
-            replaced->left = node->left;
-            replaced->right = node->right;
+            TreeNode<T>* replaced = removeMin(node->right);
+            node->value = replaced->value;
+            isNeedReBalanced = isNeedReBalanceInDeletion(replaced);
+            delete replaced;
         } else {
-
+            isNeedReBalanced = isNeedReBalanceInDeletion(node);
+            delete node;
+            node = NULL;
         }
-        delete node;
-        node = replaced;
         size--;
+        return isNeedReBalanced;
+    }
+
+    void restoreNode(Stack<TreeNode<T>**>* addrStack, TreeNode<T>** node) {
+        TreeNode<T>* current = *node;
+        if(current->hasLeft()) {
+            addrStack->push(&(current->left));
+            current = current->left;
+            while(current != NULL) {
+                addrStack->push(&(current->right));
+                current = current->right;
+            }
+        } else if (current->hasRight()) {
+            addrStack->push(&(current->right));
+            current = current->right;
+            while(current != NULL) {
+                addrStack->push(&(current->left));
+                current = current->left;
+            }
+        }
     }
 
 public:
@@ -501,16 +539,37 @@ public:
     void remove(T value) {
         TreeNode<T>** addr = &root;
         TreeNode<T>* current = * addr;
+        Stack<TreeNode<T>**>* addrStack = new Stack<TreeNode<T>**>();
+        bool isNeedReBalance = false;
         while(current != NULL) {
+            addrStack->push(addr);
             if(current->value > value) {
                 addr = &(current->left);
             } else if(current->value < value) {
                 addr = &(current->right);
             } else {
-                return removeNode(*addr);
+                isNeedReBalance = removeNode(*addr);
+                break;
             }
             current = *addr;
         }
+
+        if(!addrStack->isEmpty() && current != NULL && isNeedReBalance) {
+            TreeNode<T>** node = addrStack->top();
+            if(*node != NULL) {
+                restoreNode(addrStack, node);
+            }
+            TreeNode<T>** child = addrStack->pop();
+            while(!addrStack->isEmpty() && isNeedReBalance) {
+                TreeNode<T>** parent = addrStack->pop();
+                TreeNode<T>* brother = (*parent)->left == *child ? (*parent)->right : (*parent)->left;
+                child = parent;
+                isNeedReBalance = isNeedReBalance && deleteReBalance(*parent, brother);
+            }
+        }
+
+        delete addrStack;
+
     }
 
     Array<T>* preOrder() {
