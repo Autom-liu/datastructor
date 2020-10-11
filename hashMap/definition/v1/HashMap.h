@@ -54,12 +54,31 @@ class HashMap {
 private:
     LinkNode<K, V>** table;
     int size;
+    int capacityIndex;
     int capacity;
+    const int maxCapacityIndex = 27;
+    const int capacityContainer[27] = {31, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593,
+            49157, 98317, 196613, 393241, 786433, 1572869, 3145739, 6291469,
+            12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457, 1610612741};
     double loadFactor;
     HashedCompare<K>* hashedCompare;
 
     int hash(K key) {
         return hashedCompare->hashCode(key) % capacity;
+    }
+
+    LinkNode<K, V>*& getNode(K key) {
+        int h = hash(key);
+        LinkNode<K, V>* current = table[h];
+        LinkNode<K, V>** prev = &current;
+        while(current != NULL) {
+            if(current->key == key) {
+                return *prev;
+            }
+            prev = &(current->next);
+            current = current->next;
+        }
+        return *prev;
     }
 
     void putNode(LinkNode<K, V>** table, LinkNode<K, V>* node) {
@@ -68,10 +87,8 @@ private:
         if(current == NULL) {
             table[h] = node;
         } else {
-            while(current->next != NULL) {
-                current = current->next;
-            }
-            current->next = node;
+            node->next = current;
+            table[h] = node;
         }
     }
 
@@ -79,15 +96,17 @@ private:
         int oldCapacity = this->capacity;
         LinkNode<K, V>** newTable = new LinkNode<K, V>*[newSize];
         this->capacity = newSize;
-        int index = 0;
-        while(index < oldCapacity) {
+        for(int i = 0; i < capacity; i++) {
+            newTable[i] = NULL;
+        }
+        for(int index = 0; index <oldCapacity; index++) {
             LinkNode<K, V>* node = table[index];
-            while(node == NULL && index < oldCapacity) {
-                node = table[index++];
-            }
-            if(node != NULL && index <= oldCapacity) {
+            while(node != NULL) {
+                LinkNode<K, V>*& current = table[index];
+                current = current->next;
+                node->next = NULL;
                 putNode(newTable, node);
-                node = node->next;
+                node = current;
             }
         }
         delete this->table;
@@ -95,10 +114,11 @@ private:
     }
 
 public:
-    HashMap(HashedCompare<K>* hashCompare, int capacity = 31, double loadFactor = 0.75f) {
+    HashMap(HashedCompare<K>* hashCompare, double loadFactor = 0.75f) {
+        this->capacityIndex = 0;
+        this->capacity = capacityContainer[capacityIndex];
         this->table = new LinkNode<K, V>*[capacity];
         this->size = 0;
-        this->capacity = capacity;
         this->loadFactor = loadFactor;
         this->hashedCompare = hashCompare;
         for(int i = 0; i < capacity; i++) {
@@ -115,48 +135,37 @@ public:
     }
 
     void put(K key, V value) {
+        LinkNode<K, V>* node = getNode(key);
+        if(node != NULL) {
+            node->value = value;
+            return;
+        }
+
         putNode(table, new LinkNode<K, V>(key, value));
         size++;
+        if(size > capacity * loadFactor && capacityIndex < maxCapacityIndex) {
+            resize(capacityContainer[++capacityIndex]);
+        }
     }
 
     V get(K key) {
-        int h = hash(key);
-        LinkNode<K, V>* current = table[h];
-        while(current != NULL) {
-            if(current->key == key) {
-                return current->value;
-            }
-            current = current->next;
-        }
-        return false;
+        LinkNode<K, V>* node = getNode(key);
+        return node != NULL ? node->value : NULL;
     }
 
     bool contains(K key) {
-        int h = hash(key);
-        LinkNode<K, V>* current = table[h];
-        while(current != NULL) {
-            if(current->key == key) {
-                return true;
-            }
-            current = current->next;
-        }
-        return false;
+        return getNode(key) != NULL;
     }
 
     V remove(K key) {
-        int h = hash(key);
-        LinkNode<K, V>* current = table[h];
-        LinkNode<K, V>** prev = &current;
-        while(current != NULL) {
-            if(current->key == key) {
-                *prev = current->next;
-                size--;
-                return current->value;
-            }
-            prev = &(current->next);
-            current = current->next;
+        LinkNode<K, V>*& node = getNode(key);
+        if(node != NULL) {
+            LinkNode<K, V>* delNode = node;
+            V ret = delNode->value;
+            node = node->next;
+            return ret;
         }
-        return false;
+        return NULL;
     }
 
     class iterator;
@@ -208,6 +217,5 @@ public:
     }
 
 };
-
 
 #endif // HASHMAP_H_INCLUDED

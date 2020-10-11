@@ -20,13 +20,25 @@ void printMap(HashMap<K, V>* hmap) {
 int main()
 {
     HashMap<string, int>* hmap = new HashMap<string, int>(new StringHashed());
-    for(int i = 0; i < 30; i++) {
+    for(int i = 0; i < 1000; i++) {
         int x = rand() % 100;
         char c[3];
         string ss(c);
         sprintf(c, "t%d", x);
         hmap->put(c, x * 10);
+        cout<<x<<" ";
     }
+    cout<<endl;
+    printMap(hmap);
+    for(int i = 0; i < 1000; i++) {
+        int x = rand() % 100;
+        char c[3];
+        string ss(c);
+        sprintf(c, "t%d", x);
+        cout<<hmap->remove(c)<<" ";
+        //hmap->remove(c);
+    }
+    cout<<endl;
     printMap(hmap);
     delete hmap;
     return 0;
