@@ -82,19 +82,16 @@ private:
         int index = 0;
         while(index < oldCapacity) {
             LinkNode<K, V>* node = table[index];
-            if(node != NULL) {
-                node = node->next;
-            }
             while(node == NULL && index < oldCapacity) {
                 node = table[index++];
             }
-            if(node != NULL) {
+            if(node != NULL && index <= oldCapacity) {
                 putNode(newTable, node);
+                node = node->next;
             }
         }
         delete this->table;
         this->table = newTable;
-
     }
 
 public:
@@ -177,21 +174,25 @@ public:
     public:
         iterator(int capacity, int index, LinkNode<K, V>* node, LinkNode<K, V>** table) {
             this->capacity = capacity;
-            this->index = index;
-            this->node = node;
             this->table = table;
+            while(node == NULL && index < capacity) {
+                node = table[index++];
+            }
+            this->node = node;
+            this->index = index;
         }
         bool hasNext() {
-            return index < capacity;
+            return node != NULL;
         }
         Entry<K, V> next() {
+            Entry<K, V> entry = Entry<K, V>(node->key, node->value);
             if(node != NULL) {
                 node = node->next;
             }
-            while(node == NULL) {
+            while(node == NULL && index < capacity) {
                 node = table[index++];
             }
-            return Entry<K, V>(node->key, node->value);
+            return entry;
         }
     };
 

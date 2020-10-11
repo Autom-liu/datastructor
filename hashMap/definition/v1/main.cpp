@@ -9,9 +9,10 @@ using namespace std;
 template<typename K, typename V>
 void printMap(HashMap<K, V>* hmap) {
     typename HashMap<K, V>::iterator* it = hmap->newIterator();
+    int cnt = 0;
     while(it->hasNext()) {
         Entry<K, V> entry = it->next();
-        cout<<"key = "<<entry.key<<" value = "<<entry.value<<endl;
+        cout<<"key = "<<entry.key<<" value = "<<entry.value<<" cnt = "<<cnt++<<endl;
     }
     delete it;
 }
